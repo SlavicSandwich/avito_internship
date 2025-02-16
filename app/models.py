@@ -7,7 +7,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     password_hash = Column(String)
-    coins = Column(Integer, default=0)
+    coins = Column(Integer, default=1000)
 
     inventory = relationship("InventoryItem", back_populates="owner")
     sent_transactions = relationship("Transaction", foreign_keys="Transaction.from_user_id")

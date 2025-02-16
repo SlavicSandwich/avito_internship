@@ -68,3 +68,10 @@ def create_purchase(db: Session, user_id: int, item: str, price: int):
 
     db.commit()
     return {"message": f"Товар {item} успешно куплен"}
+
+def add_coins(db: Session, user_id: int, coin_amount: int):
+    user = db.query(models.User).get(user_id)
+
+    user.coins += coin_amount
+    db.commit()
+    return {"message": f"Added {coin_amount} coin(s)"}

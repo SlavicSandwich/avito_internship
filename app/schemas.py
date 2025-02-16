@@ -15,13 +15,16 @@ class SendCoinRequest(BaseModel):
     toUser: str
     amount: int
 
+class AddCoinRequest(BaseModel):
+    amount: int
+
 class InventoryItem(BaseModel):
     type: str
     quantity: int
 
 class TransactionHistory(BaseModel):
-    fromUser: Union[str, None]
-    toUser: str
+    fromUser: Union[int, None]
+    toUser: int
     amount: int
 
 class InfoResponse(BaseModel):
