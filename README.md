@@ -7,10 +7,6 @@
 - Безопасную передачу монет между пользователями
 - JWT-аутентификацию
 
-[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)](https://fastapi.tiangolo.com/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat&logo=postgresql)](https://www.postgresql.org/)
-[![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=flat&logo=docker)](https://www.docker.com/)
-
 ---
 
 ## Технологии
