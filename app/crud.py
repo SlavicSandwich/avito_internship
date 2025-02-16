@@ -33,7 +33,7 @@ def get_current_user(
 ):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Неавторизован",
+        detail="Unauthorized",
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
@@ -63,7 +63,7 @@ def create_transaction(db: Session, from_user_id: int, to_user_id: int, amount: 
     )
     db.add(transaction)
     db.commit()
-    return {"message": "Монеты успешно отправлены"}
+    return {"message": "Coins transferred"}
 
 
 def create_purchase(db: Session, user_id: int, item: str, price: int):
@@ -86,7 +86,7 @@ def create_purchase(db: Session, user_id: int, item: str, price: int):
         db.add(inventory_item)
 
     db.commit()
-    return {"message": f"Товар {item} успешно куплен"}
+    return {"message": f"Merch {item} bought"}
 
 
 def add_coins(db: Session, user_id: int, coin_amount: int):
