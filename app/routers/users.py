@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app import schemas, crud, auth, models
+from app import schemas, crud, models
 from app.database import get_db
 from sqlalchemy.orm import Session
 from logging import getLogger, DEBUG
@@ -11,12 +11,12 @@ logger.setLevel(DEBUG)
 
 @router.get("/info", response_model=schemas.InfoResponse)
 def get_user_info(
-        current_user: models.User = Depends(auth.get_current_user),
+        current_user: models.User = Depends(crud.get_current_user),
         db: Session = Depends(get_db)
 ):
     user = crud.get_user(db, current_user.id)
     if not user:
-        raise HTTPException(status_code=404, detail="Пользователь не найден")
+        raise HTTPException(status_code=404, detail="User not found")
 
     # logger.debug('debug message')
     # logger.debug(user.received_transactions)
@@ -44,18 +44,18 @@ def get_user_info(
 @router.post("/sendCoin")
 def send_coins(
         request: schemas.SendCoinRequest,
-        current_user: models.User = Depends(auth.get_current_user),
+        current_user: models.User = Depends(crud.get_current_user),
         db: Session = Depends(get_db)
 ):
     if request.amount <= 0:
-        raise HTTPException(400, detail="Некорректная сумма")
+        raise HTTPException(400, detail="Incorrect summ")
 
     if current_user.coins < request.amount:
-        raise HTTPException(400, detail="Недостаточно монет")
+        raise HTTPException(400, detail="Insufficient funds")
 
     receiver = crud.get_user_by_username(db, request.toUser)
     if not receiver:
-        raise HTTPException(404, detail="Получатель не найден")
+        raise HTTPException(404, detail="Receiver not found")
 
     return crud.create_transaction(
         db,
@@ -63,14 +63,3 @@ def send_coins(
         to_user_id=receiver.id,
         amount=request.amount
     )
-
-@router.post("/addCoin")
-def add_coin(
-        request: schemas.AddCoinRequest,
-        current_user: models.User = Depends(auth.get_current_user),
-        db: Session = Depends(get_db)
-):
-    if request.amount < 0:
-        raise HTTPException(400, detail="Can't add negative amount of coins")
-
-    return crud.add_coins(db, current_user.id, request.amount)

@@ -4,8 +4,6 @@ from app.database import engine, Base
 
 Base.metadata.create_all(bind=engine)
 
-
-
 app = FastAPI(
     title="API Avito Shop",
     version="1.0.0",

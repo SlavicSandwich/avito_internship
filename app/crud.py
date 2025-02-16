@@ -1,8 +1,13 @@
-from sqlalchemy.orm import Session
-from passlib.context import CryptContext
 from app import models, schemas
+from app.auth import get_password_hash, decode_access_token
+from jose import JWTError
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from app.schemas import TokenData
+from app.database import get_db
+from sqlalchemy.orm import Session
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth")
 
 
 def get_user(db: Session, user_id: int):
@@ -13,14 +18,6 @@ def get_user_by_username(db: Session, username: str):
     return db.query(models.User).filter(models.User.username == username).first()
 
 
-def verify_password(plain_password: str, hashed_password: str):
-    return pwd_context.verify(plain_password, hashed_password)
-
-
-def get_password_hash(password: str):
-    return pwd_context.hash(password)
-
-
 def create_user(db: Session, user: schemas.AuthRequest):
     hashed_password = get_password_hash(user.password)
     db_user = models.User(username=user.username, password_hash=hashed_password)
@@ -28,6 +25,28 @@ def create_user(db: Session, user: schemas.AuthRequest):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+def get_current_user(
+        db: Session = Depends(get_db),
+        token: str = Depends(oauth2_scheme),
+):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Неавторизован",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        username = decode_access_token(token)
+        if username is None:
+            raise credentials_exception
+        token_data = TokenData(username=username)
+    except JWTError:
+        raise credentials_exception
+    user = get_user_by_username(db, username=token_data.username)
+    if user is None:
+        raise credentials_exception
+    return user
 
 
 def create_transaction(db: Session, from_user_id: int, to_user_id: int, amount: int):
@@ -68,6 +87,7 @@ def create_purchase(db: Session, user_id: int, item: str, price: int):
 
     db.commit()
     return {"message": f"Товар {item} успешно куплен"}
+
 
 def add_coins(db: Session, user_id: int, coin_amount: int):
     user = db.query(models.User).get(user_id)

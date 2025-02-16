@@ -14,15 +14,14 @@ async def login(
 ):
     user = crud.get_user_by_username(db, form_data.username)
     if not user:
-        # Авторегистрация
         user = crud.create_user(db, schemas.AuthRequest(
             username=form_data.username,
             password=form_data.password
         ))
-    elif not crud.verify_password(form_data.password, user.password_hash):
+    elif not auth.verify_password(form_data.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Неверные учетные данные"
+            detail="Incorrect username or password"
         )
 
     access_token = auth.create_access_token(

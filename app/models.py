@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from app.database import Base
 
+
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
@@ -13,6 +14,7 @@ class User(Base):
     sent_transactions = relationship("Transaction", foreign_keys="Transaction.from_user_id")
     received_transactions = relationship("Transaction", foreign_keys="Transaction.to_user_id")
 
+
 class InventoryItem(Base):
     __tablename__ = "inventory"
     id = Column(Integer, primary_key=True, index=True)
@@ -20,6 +22,7 @@ class InventoryItem(Base):
     item_type = Column(String)
     quantity = Column(Integer, default=1)
     owner = relationship("User", back_populates="inventory")
+
 
 class Transaction(Base):
     __tablename__ = "transactions"
