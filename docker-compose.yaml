@@ -6,7 +6,7 @@ services:
     ports:
       - "8080:8080"
     env_file:
-      - .env  # Загружаем переменные из .env
+      - .env.example  # Загружаем переменные из .env.example
     environment:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
@@ -20,7 +20,7 @@ services:
     ports:
       - "6543:5432"
     env_file:
-      - .env  # Загружаем переменные из .env
+      - .env.example  # Загружаем переменные из .env.example
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
