@@ -3,7 +3,6 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     db_user: str = "admin"
     db_password: str = "12345"
-    db_host: str = "db"
     db_name: str = "avito"
     secret_key: str = "very-secret-key"
     algorithm: str = "HS256"

@@ -6,28 +6,31 @@ services:
     ports:
       - "8080:8080"
     env_file:
-      - .env.example  # Загружаем переменные из .env.example
+      - .env
     environment:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
-      - DB_HOST=${DB_HOST}
+      - DB_HOST=db
       - DB_NAME=${DB_NAME}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
     image: postgres:13
-    ports:
-      - "6543:5432"
     env_file:
-      - .env.example  # Загружаем переменные из .env.example
+      - .env
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_HOST: ${DB_HOST}
       POSTGRES_DB: ${DB_NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${DB_USER} -d $${DB_NAME}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:
