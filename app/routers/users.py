@@ -6,9 +6,6 @@ from logging import getLogger, DEBUG
 
 router = APIRouter(prefix="/api", tags=["users"])
 
-logger = getLogger('uvicorn.error')
-logger.setLevel(DEBUG)
-
 @router.get("/info", response_model=schemas.InfoResponse)
 def get_user_info(
         current_user: models.User = Depends(crud.get_current_user),
@@ -18,10 +15,6 @@ def get_user_info(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # logger.debug('debug message')
-    # logger.debug(user.received_transactions)
-    # logger.debug(user.sent_transactions[0].from_user_id, user.sent_transactions[0].to_user_id)
-    # logger.debug(user.sent_transactions[0].__dict__)
     return {
         "coins": user.coins,
         "inventory": [
