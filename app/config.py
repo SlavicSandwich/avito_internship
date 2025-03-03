@@ -9,6 +9,6 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
 
     class Config:
-        env_file = ".env.example"
+        env_file = ".env"
 
 settings = Settings()
